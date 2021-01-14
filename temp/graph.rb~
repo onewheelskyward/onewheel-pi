@@ -1,0 +1,64 @@
+#!/usr/bin/ruby
+
+require 'rest-client'
+require 'aws-sdk-dynamodb'
+
+#require 'gruff'
+#g = Gruff::Line.new
+#g.title = 'TempSW'
+#g.labels = { 0 => '', 1 => '5/15', 2 => '5/24', 3 => '5/30', 4 => '6/4',
+#             5 => '6/12', 6 => '6/21', 7 => '6/28' }
+#g.data :Jimmy, [25, 36, 86, 39, 25, 31, 79, 88]
+#g.data :Charles, [80, 54, 67, 54, 68, 70, 90, 95]
+#g.data :Julie, [22, 29, 35, 38, 36, 40, 46, 57]
+#g.data :Jane, [95, 95, 95, 90, 85, 80, 88, 100]
+#g.data :Philip, [90, 34, 23, 12, 78, 89, 98, 88]
+#g.data :Arthur, [5, 10, 13, 11, 6, 16, 22, 32]
+#g.write('exciting.png')
+
+Aws.config.update({
+                    region: "us-west-2",
+                    credentials: Aws::Credentials.new('AKIAIRH2DXHVQTBRSETQ', 'cCQr0nK4dhNOXL+SHhjOOg/zByTxhvqv4/35DH2O')
+                  })
+
+dynamodb = Aws::DynamoDB::Client.new
+
+timestamp = Time.now.to_i
+
+sensor_id = '28-00000a9b6404'
+table_name = 'temp-sensor-01'
+
+  # Write to dynamo
+  begin
+#    item = {
+#      sensor_id: sensor_id,
+#      timestamp: timestamp,
+#      temp: temp
+#    }
+
+#    params = {
+#      table_name: 'temp-sensor-01',
+#      item: item
+#    }
+
+    params = {
+      table_name: table_name,
+#      projection_expression: "#sensor_id, timestamp, temp",
+      key_condition_expression:
+        "#sensor_id = :sensor_id and #timestamp between :start and :stop",
+      expression_attribute_names: {
+        "#sensor_id" => "sensor_id"
+      },
+      expression_attribute_values: {
+        ":sensor_id" => sensor_id,
+        ":start" => "1549734319",
+        ":stop" => "1549742593"
+      }
+    }
+    result = dynamodb.query(params)    
+
+  rescue Aws::DynamoDB::Errors::ServiceError => e
+    puts "Error found! #{e.message}"
+  end
+  
+
