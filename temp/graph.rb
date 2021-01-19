@@ -6,7 +6,7 @@ require 'gruff'
 
 Aws.config.update({
                     region: "us-west-2",
-                    credentials: Aws::Credentials.new('AKIAIRH2DXHVQTBRSETQ', 'cCQr0nK4dhNOXL+SHhjOOg/zByTxhvqv4/35DH2O')
+                    credentials: Aws::Credentials.new()
                   })
 
 dynamodb = Aws::DynamoDB::Client.new
